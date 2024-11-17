@@ -4,10 +4,10 @@ nameSpace: apps
 imageRepository: asadullahkhan/java-21-gsm-app
 imageTag: "1"
 replicaCount: 1
-cpuRequests: 2
-cpuLimits: 2
-memoryRequests: 2G
-memoryLimits: 2G
+cpuRequests: 1
+cpuLimits: 1
+memoryRequests: 1G
+memoryLimits: 1G
 cluster: prod
 executionID: "dgdfgdrg4356456"
 

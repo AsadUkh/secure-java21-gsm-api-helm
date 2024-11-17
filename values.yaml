@@ -2,7 +2,7 @@ appName: secure-java21-gsm-api
 svcName: secure-java21-gsm-api
 nameSpace: apps
 imageRepository: asadullahkhan/java-21-gsm-app
-imageTag: "1"
+imageTag: "7"
 replicaCount: 1
 cpuRequests: 1
 cpuLimits: 1

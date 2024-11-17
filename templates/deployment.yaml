@@ -142,8 +142,8 @@ spec:
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}
       {{- end }}
-      volumes:
       {{- if .Values.secret.enabled }}
+      volumes:
       - name: sa-secret
         secret:
           secretName: {{  .Values.secret.name }}

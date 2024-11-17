@@ -1,0 +1,201 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.appName }}-{{ .Release.Name }}
+  labels:
+    app: {{ .Values.appName }}
+    layer: web
+    release: {{ .Release.Name }}
+    cluster: {{ .Values.cluster }}
+    {{- if .Values.jmxExporter.enabled }}
+    jmxExporter: enabled
+    {{- end }}
+  namespace: {{ .Values.nameSpace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}
+      layer: web
+      release: {{ .Release.Name }}
+      cluster: {{ .Values.cluster }}
+      {{- if .Values.jmxExporter.enabled }}
+      jmxExporter: enabled
+      {{- end }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}
+        layer: web
+        release: {{ .Release.Name }}
+        app.kubernetes.io/version: {{ .Values.imageTag }}
+        cluster: {{ .Values.cluster }}
+        {{- if .Values.jmxExporter.enabled }}
+        jmxExporter: enabled
+        {{- end }}
+      annotations:
+        executionID: {{ .Values.executionID }}
+    spec:
+      containers:
+        - name: {{ .Values.appName }}
+          resources:
+            requests:
+              cpu: {{ required "A valid .Values.cpuRequests entry required!" .Values.cpuRequests }}
+              memory: {{ required "A valid .Values.memoryRequests entry required!" .Values.memoryRequests }}
+            limits:
+              cpu: {{ required "A valid .Values.cpuLimits entry required!" .Values.cpuLimits }}
+              memory: {{ required "A valid .Values.memoryLimits entry required!" .Values.memoryLimits }}
+          image: "{{ .Values.imageRepository }}:{{ .Values.imageTag }}"
+          env:
+            - name: JDK_JAVA_OPTIONS
+              value: "--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util.regex=ALL-UNNAMED"
+            - name: JAVA_TOOL_OPTIONS
+              value: "{{- .Values.java.javaOpts }}
+              {{- if .Values.consul.enabled }}
+              -DCONFIG_ENABLED=true
+              -DCONFIG_CONTEXT={{ .Values.consul.configContext }}
+              -DCONSUL_HOST={{ .Values.consul.server }}
+              -DCONSUL_PORT={{ .Values.consul.port }}
+              -Dspring.profiles.active={{ .Values.consul.profiles }}
+              -DCONFIG_WATCH_DELAY={{ .Values.consul.watchDelay }}
+              -Dspring.cloud.consul.config.profile-separator={{ .Values.consul.profileseparator }}
+              -DCONSUL_TOKEN={{ .Values.consul.acltoken}}
+              {{- end }}
+              {{- if .Values.jmxExporter.enabled }}
+              -javaagent:{{ .Values.jmxExporter.module }}=9091:/opt/jmxexporter/config.yaml
+              {{- end }}
+              {{- if .Values.cert.enabled }}
+              -Djavax.net.ssl.trustStore=/macystruststore/sdpmacyscacerts
+              -Djavax.net.ssl.trustStorePasswordFile=/macystruststoresecret/sdpmacyscacerts-secret
+              {{- end }}
+              {{- if .Values.jmxConsole.enabled }}
+              -Dcom.sun.management.jmxremote=true
+              -Dcom.sun.management.jmxremote.port=9090
+              -Dcom.sun.management.jmxremote.rmi.port=9090
+              -Dcom.sun.management.jmxremote.local.only=false
+              -Dcom.sun.management.jmxremote.authenticate=false
+              -Dcom.sun.management.jmxremote.ssl=false
+              -Djava.rmi.server.hostname=127.0.0.1
+              {{- end }}
+              -Duser.timezone={{ .Values.timezone }}"
+            {{- if .Values.configmapEnabled }}
+            - name: spring.config.location
+              value: {{ .Values.mapMount }}
+            {{ end }}
+            {{- if .Values.secret.enabled }}
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: {{ .Values.secret.location }}
+            {{- end }}
+
+            {{- if .Values.dtReleaseVersion.enabled }}
+            - name: DT_RELEASE_VERSION
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['app.kubernetes.io/version']
+            {{- end }}
+          ports:
+            - containerPort: 8080
+              name: service
+            {{- if .Values.jmxExporter.enabled }}
+            - containerPort: 9091
+              name: metrics
+            {{- end }}
+            {{- if .Values.jmxConsole.enabled }}
+            - containerPort: 9090
+              name: jmxmetrics
+            {{- end }}
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: {{ .Values.LinitialDelay }}
+            periodSeconds: {{ .Values.LprobePeriod }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.RprobeUrl }}
+              port: 8080
+            initialDelaySeconds: {{ .Values.RinitialDelay }}
+            periodSeconds: {{ .Values.RprobePeriod }}
+          volumeMounts:
+          - name: timezone-config
+            mountPath: /etc/localtime
+         {{- if .Values.secret.enabled }}
+          - name: sa-secret
+            mountPath:  {{ .Values.secret.mountPath }}
+         {{- end }}
+          {{- if .Values.cert.enabled }}
+          - name: sdpmacyscacerts
+            readOnly: true
+            mountPath: /macystruststore
+          - name: sdpmacyscacerts-secret
+            readOnly: true
+            mountPath: /macystruststoresecret
+          {{- end }}
+          {{- if .Values.jksSecrets.enabled }}
+          - name: jks
+            mountPath: /jks
+          {{ end }}
+          {{- if .Values.keystoreSecrets.enabled }}
+          - name: keystore
+            mountPath: {{ .Values.keystoreSecrets.keystorePath }}
+          - name: keystore-secret
+            mountPath: {{ .Values.keystoreSecrets.keystoreSecretPath }}
+          {{- end }}
+          {{- if .Values.jmxExporter.enabled }}
+          - name: jmxexporter
+            mountPath: /opt/jmxexporter/
+          {{ end }}
+          {{- if .Values.configmapEnabled }}
+          - name: application-properties
+            mountPath: {{ .Values.mapMount }}
+            subPath: {{ .Values.mapKey }}
+          {{ end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      {{- end }}
+      volumes:
+      - name: timezone-config
+        hostPath:
+          path: /usr/share/zoneinfo/{{ .Values.timezone }}
+      {{- if .Values.secret.enabled }}
+      - name: sa-secret
+        secret:
+          secretName: {{  .Values.secret.name }}
+      {{- end }}
+      {{- if .Values.cert.enabled }}
+      - name: sdpmacyscacerts
+        secret:
+          secretName: {{ .Values.cert.truststoreName }}
+      - name: sdpmacyscacerts-secret
+        secret:
+          secretName: {{ .Values.cert.truststorePasswordName }}
+      {{- end }}
+      {{- if .Values.jksSecrets.enabled }}
+      - name: jks
+        secret:
+          secretName: {{ .Values.jksSecrets.secretName }}
+      {{- end }}
+      {{- if .Values.jmxExporter.enabled }}
+      - name: jmxexporter
+        secret:
+          secretName: {{ .Values.jmxExporter.secretName }}
+      {{- end }}
+      {{- if .Values.keystoreSecrets.enabled }}
+      - name: keystore
+        secret:
+          secretName: {{ .Values.keystoreSecrets.secretName }}
+      - name: keystore-secret
+        secret:
+          secretName: keystore-secret
+      {{- end }}
+      {{- if .Values.configmapEnabled }}
+      - name: application-properties
+        configMap:
+          name: {{ .Values.appName }}-{{ .Release.Name }}-cm
+          items:
+          - key: {{ .Values.mapKey }}
+            path: {{ .Values.mapKey }}
+      {{- end }}
+      {{- if .Values.nodeselector.enabled }}
+      nodeSelector:
+        workload: {{ .Values.nodeselector.value }}
+      {{ end }}

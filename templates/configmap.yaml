@@ -1,0 +1,13 @@
+{{- if .Values.configmapEnabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.appName }}-{{ .Release.Name }}-cm
+  labels:
+    app: {{ .Values.appName }}
+    cluster: {{ .Release.Name }}
+    brand: {{ .Values.brand }}
+  namespace: {{ .Values.nameSpace }}
+data:
+  {{ .Values.mapKey }}: {{ required "A valid .Values.mapData entry required!" .Values.mapData | quote }}
+{{ end }}

@@ -1,0 +1,45 @@
+appName: secure-java21-gsm-api
+svcName: secure-java21-gsm-api
+nameSpace: apps
+imageRepository: ci-artifacts.devops.fds.com/prod/msp-customer/secure-java21-gsm-api
+replicaCount: 5
+cpuRequests: 2
+cpuLimits: 2
+memoryRequests: 4G
+memoryLimits: 4G
+cluster: prod
+
+consul:
+  enabled: false
+  profiles: mcom,prod,ks
+
+configmapEnabled: false
+
+mapMount: /opt/application.properties
+mapKey: application.properties
+mapData:
+
+
+serviceAccount:
+  enabled: true
+  name: msp-secure-java21-gsm-api-prod
+  gcp_email: msp-secure-java21-gsm-api-prod@mtech-hs1-ecom-prod.iam.gserviceaccount.com
+
+k8s_service_account:
+  enabled: true
+
+jksSecrets:
+  enabled: false
+  secretName: db-jks-prod
+  jksPath: /jks
+
+nodeselector:
+  enabled: false
+  value: standard
+
+java:
+  javaOpts: "-XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -XX:+DebugNonSafepoints -XX:MetaspaceSize=256m -XX:MaxRAMFraction=2 -XX:+UnlockExperimentalVMOptions  -Dclient.encoding.override=ISO-8859-1 -Dfile.encoding=ISO-8859-1"
+
+ingress:
+  enable: false
+  ilb: false

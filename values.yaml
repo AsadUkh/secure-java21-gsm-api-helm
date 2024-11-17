@@ -44,3 +44,35 @@ java:
 ingress:
   enable: false
   ilb: false
+
+jmxExporter:
+  enabled: false
+
+jmxConsole:
+  enabled: false
+
+micrometer:
+  enabled: false
+  endpoint: /actuator/metrics/prometheus
+
+serviceMonitor: false
+
+cert:
+  enabled: false
+
+jksSecrets:
+  enabled: true
+  secretName: db-jks-int
+  jksPath: /jks
+
+keystoreSecrets:
+  enabled: false
+
+dtReleaseVersion:
+  enabled: true
+
+secret:
+  enabled: false
+  name: sa-secret
+  mountPath: /secrets
+  location: /secrets/service_account.json

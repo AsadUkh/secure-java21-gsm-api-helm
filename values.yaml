@@ -1,12 +1,13 @@
 appName: secure-java21-gsm-api
 svcName: secure-java21-gsm-api
 nameSpace: apps
-imageRepository: ci-artifacts.devops.fds.com/prod/msp-customer/secure-java21-gsm-api
-replicaCount: 5
+imageRepository: asadullahkhan/java-21-gsm-app
+imageTag: 1
+replicaCount: 1
 cpuRequests: 2
 cpuLimits: 2
-memoryRequests: 4G
-memoryLimits: 4G
+memoryRequests: 2G
+memoryLimits: 2G
 cluster: prod
 
 consul:

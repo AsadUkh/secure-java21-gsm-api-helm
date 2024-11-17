@@ -38,13 +38,13 @@ spec:
     spec:
       containers:
         - name: {{ .Values.appName }}
-          resources:
-            requests:
-              cpu: {{ required "A valid .Values.cpuRequests entry required!" .Values.cpuRequests }}
-              memory: {{ required "A valid .Values.memoryRequests entry required!" .Values.memoryRequests }}
-            limits:
-              cpu: {{ required "A valid .Values.cpuLimits entry required!" .Values.cpuLimits }}
-              memory: {{ required "A valid .Values.memoryLimits entry required!" .Values.memoryLimits }}
+          # resources:
+          #   requests:
+          #     cpu: {{ required "A valid .Values.cpuRequests entry required!" .Values.cpuRequests }}
+          #     memory: {{ required "A valid .Values.memoryRequests entry required!" .Values.memoryRequests }}
+          #   limits:
+          #     cpu: {{ required "A valid .Values.cpuLimits entry required!" .Values.cpuLimits }}
+          #     memory: {{ required "A valid .Values.memoryLimits entry required!" .Values.memoryLimits }}
           image: "{{ .Values.imageRepository }}:{{ .Values.imageTag }}"
           env:
             - name: JDK_JAVA_OPTIONS

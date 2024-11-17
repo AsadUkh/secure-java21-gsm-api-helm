@@ -11,6 +11,13 @@ memoryLimits: 2G
 cluster: prod
 executionID: "dgdfgdrg4356456"
 
+LinitialDelay: 45
+LprobePeriod: 10
+RprobeUrl: hello/
+RprobePeriod: hello/
+RinitialDelay: 45
+RprobePeriod: 5
+
 consul:
   enabled: false
   profiles: mcom,prod,ks

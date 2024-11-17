@@ -76,8 +76,7 @@ spec:
               -Dcom.sun.management.jmxremote.authenticate=false
               -Dcom.sun.management.jmxremote.ssl=false
               -Djava.rmi.server.hostname=127.0.0.1
-              {{- end }}
-              -Duser.timezone={{ .Values.timezone }}"
+              {{- end }}"
             {{- if .Values.configmapEnabled }}
             - name: spring.config.location
               value: {{ .Values.mapMount }}

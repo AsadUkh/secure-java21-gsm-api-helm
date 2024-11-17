@@ -69,7 +69,7 @@ cert:
   enabled: false
 
 jksSecrets:
-  enabled: true
+  enabled: false
   secretName: db-jks-int
   jksPath: /jks
 
@@ -77,7 +77,7 @@ keystoreSecrets:
   enabled: false
 
 dtReleaseVersion:
-  enabled: true
+  enabled: false
 
 secret:
   enabled: false

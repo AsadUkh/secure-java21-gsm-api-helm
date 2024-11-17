@@ -77,7 +77,6 @@ spec:
               -Dcom.sun.management.jmxremote.ssl=false
               -Djava.rmi.server.hostname=127.0.0.1
               {{- end }}"
-            {{- if .Values.configmapEnabled }}
             - name: spring.config.location
               value: {{ .Values.mapMount }}
             {{ end }}
@@ -108,8 +107,7 @@ spec:
             initialDelaySeconds: {{ .Values.RinitialDelay }}
             periodSeconds: {{ .Values.RprobePeriod }}
           volumeMounts:
-          - name: timezone-config
-            mountPath: /etc/localtime
+
          {{- if .Values.secret.enabled }}
           - name: sa-secret
             mountPath:  {{ .Values.secret.mountPath }}
@@ -145,9 +143,6 @@ spec:
       serviceAccountName: {{ .Values.serviceAccount.name }}
       {{- end }}
       volumes:
-      - name: timezone-config
-        hostPath:
-          path: /usr/share/zoneinfo/{{ .Values.timezone }}
       {{- if .Values.secret.enabled }}
       - name: sa-secret
         secret:

@@ -11,12 +11,11 @@ memoryLimits: 1G
 cluster: prod
 executionID: "dgdfgdrg4356456"
 
-LinitialDelay: 45
+LinitialDelay: 20
 LprobePeriod: 10
-RprobeUrl: hello/
-RprobePeriod: hello/
-RinitialDelay: 45
-RprobePeriod: 5
+RprobeUrl: hello
+RprobePeriod: 10
+RinitialDelay: 20
 
 consul:
   enabled: false

@@ -86,13 +86,6 @@ spec:
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: {{ .Values.secret.location }}
             {{- end }}
-
-            {{- if .Values.dtReleaseVersion.enabled }}
-            - name: DT_RELEASE_VERSION
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.labels['app.kubernetes.io/version']
-            {{- end }}
           ports:
             - containerPort: 8080
               name: service

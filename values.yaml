@@ -29,12 +29,12 @@ mapData:
 
 
 serviceAccount:
-  enabled: true
+  enabled: false
   name: secure-java21-gsm-api
   gcp_email: training-devops@gcp-hackathon-macys.iam.gserviceaccount.com
 
 k8s_service_account:
-  enabled: true
+  enabled: false
 
 jksSecrets:
   enabled: false
@@ -81,7 +81,7 @@ dtReleaseVersion:
   enabled: false
 
 secret:
-  enabled: false
+  enabled: true
   name: sa-secret
   mountPath: /secrets
   location: /secrets/service_account.json

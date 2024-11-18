@@ -30,7 +30,7 @@ mapData:
 
 serviceAccount:
   enabled: true
-  name: msp-secure-java21-gsm-api
+  name: secure-java21-gsm-api
   gcp_email: training-devops@gcp-hackathon-macys.iam.gserviceaccount.com
 
 k8s_service_account:

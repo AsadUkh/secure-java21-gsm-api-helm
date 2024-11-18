@@ -10,7 +10,7 @@ metadata:
   namespace: {{ .Values.nameSpace }}
 spec:
   rules:
-  - host: "{{ .Values.appName }}{{ .Values.ingress.domain }}"
+  - host: "{{ .Values.appName }}.{{ .Values.ingress.domain }}"
     http:
       paths:
       - backend:
@@ -19,17 +19,6 @@ spec:
             port:
               number: 80
         pathType: ImplementationSpecific
-  {{- if .Values.ingress.ilb }}
-  - host: "{{ .Values.appName }}{{ .Values.ingress.ilbdomain }}"
-    http:
-      paths:
-      - backend:
-          service:
-            name: {{ .Values.appName }}
-            port:
-              number: 80
-        pathType: ImplementationSpecific
-  {{ end }}
   {{- if .Values.ingress.tls }}
   tls:
     hosts:

@@ -49,7 +49,9 @@ java:
   javaOpts: "-XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+UnlockDiagnosticVMOptions -XX:+DebugNonSafepoints -XX:MetaspaceSize=256m -XX:MaxRAMFraction=2 -XX:+UnlockExperimentalVMOptions  -Dclient.encoding.override=ISO-8859-1 -Dfile.encoding=ISO-8859-1"
 
 ingress:
-  enable: false
+  enabled: true
+  class: nginx
+  domain: asadali.ie
   ilb: false
 
 jmxExporter:
